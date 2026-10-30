@@ -190,8 +190,9 @@ h1 em,h2 em{font-style:italic;color:var(--olive)}
 .demo{position:fixed;right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));font-family:var(--label);font-size:10px;color:var(--olive);letter-spacing:.14em;text-transform:uppercase;z-index:25}
 
 /* ask-the-desk booking form */
-.askgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
-.field{font:inherit;font-size:17px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--forest);width:100%;max-width:100%}
+.askgrid{display:flex;flex-direction:column;gap:20px}
+.askgrid .group{min-width:0}
+.field{display:block;box-sizing:border-box;min-width:0;-webkit-appearance:none;appearance:none;min-height:48px;font:inherit;font-size:17px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--forest);width:100%;max-width:100%}
 textarea.field{resize:none;line-height:1.4}
 @media (max-width:700px){.askgrid{grid-template-columns:minmax(0,1fr)}}
 select{font:inherit;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--paper);color:var(--forest)}
@@ -448,7 +449,7 @@ S.book=()=>{
    <div class="panel stack">
      <div><div class="sub">Or let the front desk book it for you</div><p class="note" style="margin-top:6px">Choose a day and a time that suits you. We'll confirm the exact time with your master before you leave.</p></div>
      <div class="askgrid">
-       <div class="group"><label class="sub" for="askDate">Day</label><input type="date" id="askDate" class="field" value="${isoIn(21)}" min="${isoIn(1)}"><span class="note" id="askDay">${niceDate(isoIn(21))} · in 3 weeks</span></div>
+       <div class="group"><label class="sub" for="askDate">Day</label><input type="date" id="askDate" class="field" style="max-width:320px" value="${isoIn(21)}" min="${isoIn(1)}"><span class="note" id="askDay">${niceDate(isoIn(21))} · in 3 weeks</span></div>
        <div class="group"><div class="sub">Time of day</div><div class="chips">${['Morning','Afternoon','Evening'].map(x=>`<button class="chip" data-ask="${x}" aria-pressed="${x==='Afternoon'}">${x}</button>`).join('')}</div></div>
      </div>
      <div class="group"><label class="sub" for="askNotes">Notes for the front desk</label><textarea id="askNotes" class="field" rows="2" maxlength="200" placeholder="Same master, same service, any wishes…"></textarea></div>
