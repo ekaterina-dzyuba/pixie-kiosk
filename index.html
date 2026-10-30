@@ -189,6 +189,11 @@ h1 em,h2 em{font-style:italic;color:var(--olive)}
 
 .demo{position:fixed;right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));font-family:var(--label);font-size:10px;color:var(--olive);letter-spacing:.14em;text-transform:uppercase;z-index:25}
 
+/* ask-the-desk booking form */
+.askgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+.field{font:inherit;font-size:17px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--forest);width:100%;max-width:100%}
+textarea.field{resize:none;line-height:1.4}
+@media (max-width:700px){.askgrid{grid-template-columns:minmax(0,1fr)}}
 select{font:inherit;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--paper);color:var(--forest)}
 .settings{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 
@@ -437,11 +442,21 @@ S.book=()=>{
      <div class="panel stack">
        <div class="group"><div class="sub">Pixie Nail Lab ${station.loc}</div><div>${L.addr}<br><span style="color:var(--olive)">${L.phone} · open daily 9 am – 6 pm</span></div></div>
        <button class="cta" data-sheet="book">Book on this iPad</button>
-       <button class="chip" data-send="Please book my next visit" style="align-self:flex-start">Ask the front desk to book for me</button>
      </div>
      <div class="panel qr"><div class="code" data-url="${L.book}"></div><b>Book on your phone</b><span class="tag">Scan with your camera</span></div>
    </div>
+   <div class="panel stack">
+     <div><div class="sub">Or let the front desk book it for you</div><p class="note" style="margin-top:6px">Choose a day and a time that suits you. We'll confirm the exact time with your master before you leave.</p></div>
+     <div class="askgrid">
+       <div class="group"><label class="sub" for="askDate">Day</label><input type="date" id="askDate" class="field" value="${isoIn(21)}" min="${isoIn(1)}"><span class="note" id="askDay">${niceDate(isoIn(21))} · in 3 weeks</span></div>
+       <div class="group"><div class="sub">Time of day</div><div class="chips">${['Morning','Afternoon','Evening'].map(x=>`<button class="chip" data-ask="${x}" aria-pressed="${x==='Afternoon'}">${x}</button>`).join('')}</div></div>
+     </div>
+     <div class="group"><label class="sub" for="askNotes">Notes for the front desk</label><textarea id="askNotes" class="field" rows="2" maxlength="200" placeholder="Same master, same service, any wishes…"></textarea></div>
+     <button class="cta" id="askBtn">Ask the front desk to book</button>
+   </div>
  </div>`;};
+function isoIn(d){const x=new Date();x.setDate(x.getDate()+d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');}
+function niceDate(iso){const [y,m,d]=iso.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});}
 
 S.menu=()=>`
  <div class="wrap">
@@ -532,6 +547,7 @@ function drawQRs(){
   });
 }
 homeBtn.onclick=()=>go('home');
+view.addEventListener('change',e=>{if(e.target.id==='askDate'){const v=e.target.value;$('#askDay').textContent=v?niceDate(v):'';}});
 function openSheet(url,title){$('#sheetTitle').textContent=title;$('#sheetFrame').src=url;$('#sheet').hidden=false;}
 function closeSheet(){$('#sheet').hidden=true;$('#sheetFrame').src='about:blank';}
 $('#sheetClose').onclick=closeSheet;
@@ -546,7 +562,7 @@ function openApp(key){
   })();
 }
 
-const blank=()=>({drink:null,snacks:[],temp:'Hot',milk:'No milk',sweet:'None',bsvc:'Same as today',bday:null,btime:null,shades:[]});
+const blank=()=>({ask:'Afternoon',drink:null,snacks:[],temp:'Hot',milk:'No milk',sweet:'None',bsvc:'Same as today',bday:null,btime:null,shades:[]});
 let pick=blank();
 function press(group,btn){document.querySelectorAll(`[data-${group}]`).forEach(b=>b.setAttribute('aria-pressed',b===btn?'true':'false'));}
 view.addEventListener('click',e=>{
@@ -564,6 +580,9 @@ view.addEventListener('click',e=>{
   if(b.dataset.bsvc){pick.bsvc=b.dataset.bsvc;press('bsvc',b);return;}
   if(b.dataset.bday){pick.bday=b.dataset.bday;press('bday',b);updBook();return;}
   if(b.dataset.btime){pick.btime=b.dataset.btime;press('btime',b);updBook();return;}
+  if(b.dataset.ask){pick.ask=b.dataset.ask;press('ask',b);return;}
+  if(b.id==='askBtn'){const d=$('#askDate').value||isoIn(21);const n=($('#askNotes').value||'').trim().slice(0,200);
+    sent('Day: '+niceDate(d)+' · '+(pick.ask||'Afternoon')+(n?'\nNotes: '+n:''),'book');pick.ask='Afternoon';setTimeout(()=>go('home'),900);return;}
   if(b.id==='bookBtn'){sent('Booking request','book');setTimeout(()=>go('home'),900);return;}
   if(b.dataset.shade){
     const n=b.dataset.shade,i=pick.shades.indexOf(n);
