@@ -581,7 +581,10 @@ function closeSheet(){$('#sheet').hidden=true;$('#sheetFrame').src='about:blank'
 $('#sheetClose').onclick=closeSheet;
 /* Open the installed streaming app by its app link; try the next one if the iPad is still showing us. */
 const APPS={netflix:['nflx://'],youtube:['youtube://'],hulu:['hulu://'],hbomax:['shortcuts://run-shortcut?name=Open%20HBO%20Max'] /* iPad Shortcut 'Open HBO Max' → Open App: HBO Max */};
+/* Services that play fine in the iPad browser open as a page inside Kiosk Pro (back = Kiosk Pro Home button). */
+const WEB={netflix:'https://www.netflix.com/browse'};
 function openApp(key){
+  if(WEB[key]){toast('Opening…');location.href=WEB[key];return;}
   const list=APPS[key].slice();
   (function next(){
     const u=list.shift(); if(!u){toast('Please ask the front desk to open this app for you.');return;}
