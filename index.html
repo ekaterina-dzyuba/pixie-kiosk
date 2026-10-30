@@ -230,6 +230,10 @@ const view=$('#view'), homeBtn=$('#homeBtn'), veil=$('#veil');
 /* station settings (per tablet) */
 let station={loc:'Kirkland',num:1};
 try{const s=JSON.parse(localStorage.getItem('pixie-station')||'null'); if(s) station=s;}catch(e){}
+/* The address itself can fix the tablet: ...pixie-kiosk/?loc=Seattle&st=2  (survives apps that wipe browser storage) */
+try{const q=new URLSearchParams(location.search);const ql=(q.get('loc')||'').toLowerCase();const qn=parseInt(q.get('st')||'',10);
+  if(ql==='seattle'||ql==='kirkland'){station.loc=ql==='seattle'?'Seattle':'Kirkland';}
+  if(qn>0&&qn<100){station.num=qn;}}catch(e){}
 function saveStation(){try{localStorage.setItem('pixie-station',JSON.stringify(station))}catch(e){} $('#stationLabel').textContent=station.loc+' · '+seatWord()+' '+station.num;}
 function seatWord(){return station.loc==='Seattle'?'iPad':'Station';}
 saveStation();
