@@ -562,9 +562,9 @@ wm.addEventListener('touchcancel',()=>clearTimeout(lp));
 wm.addEventListener('mousedown',down);wm.addEventListener('mouseup',up);
 wm.addEventListener('contextmenu',e=>e.preventDefault());
 
-/* welcome + 30-minute idle reset */
+/* welcome + 15-minute idle reset */
 let idle;
-function resetIdle(){clearTimeout(idle);idle=setTimeout(()=>{closeSheet();veil.hidden=false;pick=blank();go('home');},1800000);}
+function resetIdle(){clearTimeout(idle);idle=setTimeout(()=>{closeSheet();veil.hidden=false;pick=blank();go('home');},900000);}
 ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
 $('#start').onclick=()=>{veil.hidden=true;resetIdle();};
 veil.addEventListener('click',e=>{if(e.target===veil){veil.hidden=true;resetIdle();}});
