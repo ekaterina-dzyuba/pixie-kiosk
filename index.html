@@ -688,7 +688,7 @@ const APPS={netflix:['nflx://'],youtube:['youtube://'],hulu:['hulu://'],hbomax:[
 const WEB={netflix:'https://www.netflix.com/browse'};
 function openApp(key){
   sesNote('watched',key); sesEnd();
-  if(WEB[key]){toast('Opening…');location.href=WEB[key];return;}
+  if(WEB[key]){toast('Opening…');const u=WEB[key];setTimeout(()=>location.replace(u),1200);return;}
   const list=APPS[key].slice();
   (function next(){
     const u=list.shift(); if(!u){toast('Please ask the front desk to open this app for you.');return;}
