@@ -286,6 +286,24 @@ select{font:inherit;padding:10px 14px;border-radius:10px;border:1px solid var(--
 .tvm .moonrow svg{width:17vw;height:17vw;flex:none}
 .tvm .verdict{display:inline-block;margin-top:1.4vw;padding:.6vw 1.4vw;border-radius:99px;background:var(--cream);color:var(--forest);font-family:var(--label);letter-spacing:.14em;text-transform:uppercase;font-size:1vw}
 .tvm .meta{display:flex;gap:2vw;margin-top:1vw;font-family:var(--label);letter-spacing:.16em;text-transform:uppercase;font-size:.95vw;color:var(--sage)}
+
+/* beauty horoscope */
+.zods{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.zod{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border-radius:14px;border:1px solid var(--line);background:var(--paper)}
+.zod i{font-style:normal;font-size:22px;line-height:1;font-family:'Apple Symbols','Segoe UI Symbol','DejaVu Sans',var(--serif)}.zod b{font-weight:500;font-size:14px}.zod small{font-size:10px;color:var(--olive)}
+.zod[aria-pressed="true"]{background:var(--forest);color:var(--cream);border-color:var(--forest)}.zod[aria-pressed="true"] small{color:var(--sage)}
+.horo{display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px;align-items:start;padding:22px;border-radius:var(--r);background:var(--sage-wash)}
+.horo .glyph{font-size:54px;line-height:1;color:var(--forest);font-family:'Apple Symbols','Segoe UI Symbol','DejaVu Sans',var(--serif)}
+.horo h3{font-size:28px}.horo p{margin:8px 0 0;line-height:1.55}
+.horo .luck{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.horo .luck span{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:99px;background:var(--paper);border:1px solid var(--line);font-size:13px}
+.horo .luck i{width:16px;height:16px;border-radius:50%;border:1px solid rgba(0,0,0,.15)}
+@media (max-width:900px){.zods{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.tvm .zgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.2vw 2vw;margin-top:2vw}
+.tvm .zgrid div{display:flex;align-items:center;gap:1vw;font-size:1.45vw}
+.tvm .zgrid em{font-style:normal;font-family:'Apple Symbols','Segoe UI Symbol','DejaVu Sans',var(--serif);font-size:2.2vw;width:2.6vw;text-align:center;color:var(--sage)}
+.tvm .zgrid i{width:1.3vw;height:1.3vw;border-radius:50%;flex:none;border:1px solid rgba(247,236,221,.4)}
+.tvm .zgrid small{display:block;font-size:1vw;color:rgba(247,236,221,.7)}
 </style>
 
 </head>
@@ -610,6 +628,25 @@ function moonSVG(m,size){const r=size/2-2,c=size/2,p=m.el*RAD,x=Math.abs(r*Math.
   return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true"><circle cx="${c}" cy="${c}" r="${r}" fill="#2f3226" stroke="rgba(247,236,221,.35)"/><path d="${d}" fill="#F7ECDD"/></svg>`;}
 function noonOn(dt){const x=new Date(dt);x.setHours(12,0,0,0);return x;}
 let moonSel=0, birthMoon=null;
+/* Daily beauty horoscope: same text for everyone on a given day, changes every day (Seattle date). Just for fun. */
+const ZOD=[['Aries','♈︎','Mar 21 – Apr 19','fire'],['Taurus','♉︎','Apr 20 – May 20','earth'],['Gemini','♊︎','May 21 – Jun 20','air'],['Cancer','♋︎','Jun 21 – Jul 22','water'],['Leo','♌︎','Jul 23 – Aug 22','fire'],['Virgo','♍︎','Aug 23 – Sep 22','earth'],['Libra','♎︎','Sep 23 – Oct 22','air'],['Scorpio','♏︎','Oct 23 – Nov 21','water'],['Sagittarius','♐︎','Nov 22 – Dec 21','fire'],['Capricorn','♑︎','Dec 22 – Jan 19','earth'],['Aquarius','♒︎','Jan 20 – Feb 18','air'],['Pisces','♓︎','Feb 19 – Mar 20','water']];
+const HCOL=[['Cherry red','#9B1B30'],['Soft nude','#E3C4AE'],['Milky white','#F4EFE6'],['Sage green','#A7AC8C'],['Deep burgundy','#5C1A2B'],['Blush pink','#EBB7B8'],['Mocha','#7A5A48'],['Lavender','#B9A6CF'],['Midnight navy','#1F2A44'],['Champagne gold','#D8BE8A'],['Coral','#F08A6E'],['Chrome silver','#C9CCD1'],['Olive','#6B6B3A'],['Espresso','#3B2A22'],['Rose quartz','#E7C3C6'],['Butter yellow','#F3E3A2']];
+const HSHAPE=['almond','soft square','oval','short squoval','round','coffin','long almond','natural short'];
+const HDESIGN=['a glossy one-colour look','a soft French','a chrome finish','a cat-eye shimmer','a delicate accent nail','a baby-boomer ombre','minimal line art','a single glitter accent','a jelly sheer finish','tiny hand-painted details'];
+const HOPEN={fire:['Your energy is magnetic today.','Bold moves pay off today.','You are ready to stand out.'],earth:['Today rewards patience and quality.','Small rituals bring big calm today.','Classic choices feel just right today.'],air:['Your curiosity sparks something new today.','Conversations bring good news today.','A little experiment will delight you today.'],water:['Your intuition is spot on today.','Today is for softness and self-care.','Let yourself be pampered today.']};
+const HMID=['Treat your hands like the main character','Give your cuticles a little extra love with oil tonight','Trust your first instinct when choosing a colour','A compliment is coming your way','Say yes to the add-on you have been curious about','Take ten slow breaths and enjoy this moment','Someone will ask where you got your nails done','Comfort and confidence go together today','A tiny change makes a big difference','Your style says exactly what you want it to say'];
+function hseed(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
+function seaDate(){return new Date().toLocaleDateString('en-CA',{timeZone:'America/Los_Angeles'});}
+function horoFor(i){const z=ZOD[i],h=hseed(seaDate()+z[0]),pick=(a,k)=>a[(h>>>k)%a.length];
+  const col=pick(HCOL,1),shape=pick(HSHAPE,5),des=pick(HDESIGN,9),open=pick(HOPEN[z[3]],13),mid=pick(HMID,17),m=moonAt(noonOn(Date.now()));
+  const moonNote=m.sign===z[0]?' With the Moon in your own sign, today is extra lucky for you!':'';
+  return {z,col,shape,des,text:open+' '+mid+'. Try '+des+' in '+col[0].toLowerCase()+' on '+shape+' nails.'+moonNote};}
+function sunSignOf(mo,d){const md=mo*100+d;const C=[[120,10],[219,11],[321,0],[420,1],[521,2],[621,3],[723,4],[823,5],[923,6],[1023,7],[1122,8],[1222,9]];let s=9;for(const [k,v] of C) if(md>=k) s=v;return s;}
+let horoSel=null;
+function horoText(){if(horoSel===null)return '<p class="note">Tap your sign to see today\'s beauty horoscope.</p>';const h=horoFor(horoSel);
+  return `<div class="horo"><div class="glyph">${h.z[1]}</div><div><div class="sub">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})} · ${h.z[2]}</div><h3>${h.z[0]}</h3><p>${h.text}</p>
+  <div class="luck"><span><i style="background:${h.col[1]}"></i>Lucky colour: ${h.col[0]}</span><span>Shape: ${h.shape}</span><span>Design: ${h.des}</span></div></div></div>`;}
+
 function moonCard(){const d=noonOn(Date.now()+moonSel*86400000),m=moonAt(d),a=moonAdvice(m);
   return `<div class="moonhero">${moonSVG(m,150)}<div class="mbody">
     <div class="mdate">${moonSel===0?'Today · ':''}${d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</div>
@@ -623,12 +660,17 @@ function birthText(){if(!birthMoon)return '';const m=birthMoon;return `You were 
   (phaseName(m)==='Full Moon'?'Full-Moon people shine bright, so go bold with chrome, cat eye or a statement red!':phaseName(m)==='New Moon'?'New-Moon people love fresh starts, so a clean nude or soft French is your signature.':m.waxing?'Waxing-Moon people love growth and change. Try a new shape or colour this season!':'Waning-Moon people love classics that last. A perfect match for a long-wearing gel manicure.');}
 S.moon=()=>`
  <div class="wrap">
-   <div><div class="eyebrow">Lunar beauty calendar</div><h2>Your best days for <em>beautiful nails.</em></h2><p class="lede">A traditional lunar calendar, just for fun. Tap any day to see what the Moon suggests, then ask us to book it.</p></div>
+   <div><div class="eyebrow">Lunar beauty calendar</div><h2>Your best days for <em>beautiful nails.</em></h2><p class="lede">A traditional lunar calendar and today's beauty horoscope, just for fun. Tap any day to see what the Moon suggests, then ask us to book it.</p></div>
    <div id="moonCard">${moonCard()}</div>
    <div class="panel stack">
      <div class="mlegend"><span><i style="background:var(--forest)"></i>Great day</span><span><i style="background:var(--sage)"></i>Good day</span><span><i style="border:1px solid var(--olive)"></i>Rest day</span></div>
      <div class="mcal" id="moonCal">${moonCal()}</div>
      <button class="cta" id="moonBook">Ask the front desk to book this day</button>
+   </div>
+   <div class="panel stack">
+     <div class="sub">Today's beauty horoscope</div>
+     <div class="zods">${ZOD.map((z,i)=>`<button class="zod" data-zod="${i}" aria-pressed="${i===horoSel}"><i>${z[1]}</i><b>${z[0]}</b><small>${z[2]}</small></button>`).join('')}</div>
+     <div id="horoOut">${horoText()}</div>
    </div>
    <div class="panel stack">
      <div class="sub">Your birthday Moon</div>
@@ -762,9 +804,10 @@ view.addEventListener('click',e=>{
     else{toast('You can pick up to 3 shades.');}
     const s=$('#shadeBtn');s.disabled=!pick.shades.length;s.textContent=pick.shades.length?'Send to my master':'Pick up to 3 shades';const pt=$('#lxPicked');if(pt)pt.textContent=pickedText();return;
   }
+  if(b.dataset.zod){horoSel=+b.dataset.zod;press('zod',b);$('#horoOut').innerHTML=horoText();return;}
   if(b.dataset.mday){moonSel=+b.dataset.mday;press('mday',b);$('#moonCard').innerHTML=moonCard();return;}
   if(b.id==='moonBook'){const d=noonOn(Date.now()+moonSel*86400000),a=moonAdvice(moonAt(d));sent('Day: '+d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+' · any time\nNotes: picked from the lunar calendar ('+a.label+')','book');setTimeout(()=>go('home'),900);return;}
-  if(b.id==='birthBtn'){const v=$('#birthDate').value;if(!v){toast('Choose your birthday first.');return;}const [y,mo,da]=v.split('-').map(Number);birthMoon=moonAt(new Date(y,mo-1,da,12));$('#birthOut').innerHTML=birthText();return;}
+  if(b.id==='birthBtn'){const v=$('#birthDate').value;if(!v){toast('Choose your birthday first.');return;}const [y,mo,da]=v.split('-').map(Number);birthMoon=moonAt(new Date(y,mo-1,da,12));$('#birthOut').innerHTML=birthText();horoSel=sunSignOf(mo,da);document.querySelectorAll('[data-zod]').forEach(x=>x.setAttribute('aria-pressed',String(+x.dataset.zod===horoSel)));$('#horoOut').innerHTML=horoText();return;}
   if(b.dataset.lxf){lxFam=b.dataset.lxf;press('lxf',b);$('#lxGrid').innerHTML=lxCards();return;}
   if(b.id==='shadeBtn'){sent('Luxio shades: '+pick.shades.join(', '),'shade');pick.shades=[];setTimeout(()=>go('home'),900);return;}
 });
@@ -786,7 +829,7 @@ wm.addEventListener('contextmenu',e=>e.preventDefault());
 
 /* welcome + 15-minute idle reset */
 let idle;
-function resetIdle(){clearTimeout(idle);if(ses)ses.last=Date.now();else if(veil.hidden&&cur!=='admin'){sesStart();sesNote('screens',cur);}idle=setTimeout(()=>{sesEnd();moonSel=0;birthMoon=null;closeSheet();setSeat('');veil.hidden=false;pick=blank();go('home');},900000);}
+function resetIdle(){clearTimeout(idle);if(ses)ses.last=Date.now();else if(veil.hidden&&cur!=='admin'){sesStart();sesNote('screens',cur);}idle=setTimeout(()=>{sesEnd();horoSel=null;moonSel=0;birthMoon=null;closeSheet();setSeat('');veil.hidden=false;pick=blank();go('home');},900000);}
 ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
 $('#start').onclick=()=>{veil.hidden=true;sesEnd();sesStart();sesNote('screens',cur);resetIdle();};
 addEventListener('pagehide',sesEnd);
@@ -810,6 +853,7 @@ if(QS.get('mode')==='tv'){
     ()=>`<div class="slide"><div class="card"><div class="eb">Our services</div><h2>Russian manicure <em>&amp; pedicure.</em></h2><div class="svc">${svc(['Russian Manicure','Pedicure'])}</div></div></div>`,
     ()=>`<div class="slide"><div class="card"><div class="eb">Our services</div><h2>Extensions, art <em>&amp; lashes.</em></h2><div class="svc">${svc(['Extensions','Nail art & add-ons','Brows & Lashes'])}</div></div></div>`,
     ()=>`<div class="slide">${moonSlide()}</div>`,
+    ()=>`<div class="slide"><div class="card"><div class="eb">Today's beauty horoscope</div><h2>Your lucky <em>colour</em> today.</h2><div class="zgrid">${ZOD.map((z,k)=>{const h=horoFor(k);return `<div><em>${z[1]}</em><i style="background:${h.col[1]}"></i><span>${z[0]}<small>${h.col[0]} · ${h.shape}</small></span></div>`;}).join('')}</div><p>Read your full horoscope on the iPad at your station.</p></div></div>`,
     ()=>`<div class="slide"><div class="card split"><div><div class="eb">Thank you · ${L}</div><h2>Loved <em>your visit?</em></h2><p>Scan with your phone camera. A few words help other clients find us and make our masters' day.</p></div><div class="qrbox"><figure><div class="code" data-tvqr="${LOC[L].google}"></div><figcaption>Google</figcaption></figure><figure><div class="code" data-tvqr="${LOC[L].yelp}"></div><figcaption>Yelp</figcaption></figure></div></div></div>`,
     ()=>`<div class="slide"><div class="card split"><div><div class="eb">Pixie gift cards</div><h2>Give the Pixie <em>experience.</em></h2><p>A digital gift card for any service, sent straight to their inbox. Scan to buy on your phone.</p></div><div class="qrbox"><figure><div class="code" data-tvqr="${GIFT}"></div><figcaption>Gift cards</figcaption></figure></div></div></div>`
   ];
