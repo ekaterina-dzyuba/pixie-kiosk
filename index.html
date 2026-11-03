@@ -121,7 +121,7 @@ h1 em,h2 em{font-style:italic;color:var(--olive)}
 .yt{background:#fff;color:#0F0F0F;border:1px solid var(--line)}.yt b{color:#FF0033}
 .hu{background:#0B0C0F;color:#fff}.hu b{color:#1CE783;font-size:26px;letter-spacing:-.01em}
 .hb{background:#002BE7;color:#fff}.hb b{color:#fff}
-.apps{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+.apps{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 @media (max-width:900px){.apps{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 .note{font-size:14px;color:var(--olive);line-height:1.5;margin:0}
 
@@ -603,12 +603,11 @@ S.moon=()=>`
 
 S.watch=()=>`
  <div class="wrap">
-   <div><div class="eyebrow">Relax</div><h2>Watch <em>&amp; listen.</em></h2><p class="lede">Headphones are at your station and fresh ear covers are on the tray. To come back to this menu, tap the Home button at the bottom of the screen (in HBO Max — the round button).</p></div>
+   <div><div class="eyebrow">Relax</div><h2>Watch <em>&amp; listen.</em></h2><p class="lede">Headphones are at your station and fresh ear covers are on the tray. To come back to this menu, tap the Home button at the bottom of the screen.</p></div>
    <div class="apps">
      <button class="app-tile nf" data-app="netflix"><b>NETFLIX</b><span>Series & films</span></button>
      <button class="app-tile yt" data-app="youtube"><b>YouTube</b><span>Videos & music</span></button>
      <button class="app-tile hu" data-app="hulu"><b>hulu</b><span>Series & films</span></button>
-     <button class="app-tile hb" data-app="hbomax"><b>HBO Max</b><span>Series & films</span></button>
    </div>
    <p class="note">Already signed in to the salon's profile — just pick a show and enjoy.</p>
  </div>`;
@@ -688,7 +687,7 @@ const APPS={netflix:['nflx://'],youtube:['youtube://'],hulu:['hulu://'],hbomax:[
 const WEB={netflix:'https://www.netflix.com/browse',youtube:'https://m.youtube.com/',hulu:'https://www.hulu.com/hub/home'};
 function openApp(key){
   sesNote('watched',key); sesEnd();
-  if(WEB[key]){toast('Opening…');const u=WEB[key];setTimeout(()=>location.replace(u),1200);return;}
+  if(WEB[key]){toast('Opening…');const u=WEB[key];try{localStorage.setItem('pnlBack',String(Date.now()));sessionStorage.setItem('pnlBack',String(Date.now()));}catch(e){}setTimeout(()=>location.replace(u),1200);return;}
   const list=APPS[key].slice();
   (function next(){
     const u=list.shift(); if(!u){toast('Please ask the front desk to open this app for you.');return;}
@@ -759,6 +758,9 @@ $('#seatDone').onclick=()=>{$('#seatSheet').hidden=true;};
 veil.addEventListener('click',e=>{if(e.target===veil){veil.hidden=true;resetIdle();}});
 
 go('home');
+/* Coming back from Netflix / YouTube / Hulu (Kiosk Pro Home button reloads the page): skip the splash, show the menu. */
+(function(){let b=0;try{b=Math.max(+localStorage.getItem('pnlBack')||0,+sessionStorage.getItem('pnlBack')||0);localStorage.removeItem('pnlBack');sessionStorage.removeItem('pnlBack');}catch(e){}
+  if(b&&Date.now()-b<3*3600000){veil.hidden=true;sesStart();sesNote('screens','home');resetIdle();}})();
 })();
 </script>
 
