@@ -326,6 +326,22 @@ function sent(what,kind){
   fetch(HOOK,{method:'POST',mode:'no-cors',body})
     .then(()=>toast('Sent! The front desk is on it.'))
     .catch(()=>toast('We couldn\'t reach the front desk. Please wave to our team — we\'ll be right there.'));
+  sesNote('actions',kind==='drink'?'drink: '+String(what).slice(0,60):kind==='shade'?'shades: '+String(what).replace('Luxio shades: ','').slice(0,60):({desk:'call desk',book:'booking request',shop:'gift card'})[kind]||kind);
+}
+/* Anonymous usage stats: one row per client session → n8n → «Kiosk Sessions». No names, no notes. */
+const STATS='https://pixienaillab.app.n8n.cloud/webhook/pixie-kiosk-stats';
+let ses=null;
+function sesStart(){ses={t0:Date.now(),last:Date.now(),screens:[],actions:[],watched:[]};}
+function sesNote(type,v){
+  if(!ses) sesStart(); ses.last=Date.now();
+  const a=ses[type]; if(type==='actions'){ if(a.length<30) a.push(v); } else if(!a.includes(v)) a.push(v);
+}
+function sesEnd(){
+  if(!ses) return; const s=ses; ses=null;
+  if(!s.actions.length&&!s.watched.length&&s.screens.length<2&&s.last-s.t0<10000) return; /* stray tap */
+  const body=new URLSearchParams({k:'pnl26',loc:station.loc,st:String(station.num),seat:handheld()?seat:'',t0:String(s.t0),dur:String(Math.max(0,s.last-s.t0)),screens:s.screens.join(', '),actions:s.actions.join('; '),watched:s.watched.join(', ')});
+  try{ if(navigator.sendBeacon&&navigator.sendBeacon(STATS,body)) return; }catch(e){}
+  try{ fetch(STATS,{method:'POST',mode:'no-cors',keepalive:true,body}); }catch(e){}
 }
 
 const I={
@@ -644,6 +660,7 @@ S.admin=()=>`
 
 function go(name){
   cur=name;
+  if(name!=='admin'&&veil.hidden) sesNote('screens',name);
   view.innerHTML=S[name](); view.scrollTop=0;
   homeBtn.hidden=(name==='home');
   if(name==='review'||name==='shop'||name==='book') drawQRs();
@@ -662,7 +679,7 @@ function drawQRs(){
 homeBtn.onclick=()=>go('home');
 view.addEventListener('input',e=>{if(e.target.id==='lxSearch'){lxQ=e.target.value.trim();$('#lxGrid').innerHTML=lxCards();}});
 view.addEventListener('change',e=>{if(e.target.id==='askDate'){const v=e.target.value;$('#askDay').textContent=v?niceDate(v):'';}});
-function openSheet(url,title){$('#sheetTitle').textContent=title;$('#sheetFrame').src=url;$('#sheet').hidden=false;}
+function openSheet(url,title){sesNote('actions','opened online booking');$('#sheetTitle').textContent=title;$('#sheetFrame').src=url;$('#sheet').hidden=false;}
 function closeSheet(){$('#sheet').hidden=true;$('#sheetFrame').src='about:blank';}
 $('#sheetClose').onclick=closeSheet;
 /* Open the installed streaming app by its app link; try the next one if the iPad is still showing us. */
@@ -670,6 +687,7 @@ const APPS={netflix:['nflx://'],youtube:['youtube://'],hulu:['hulu://'],hbomax:[
 /* Services that play fine in the iPad browser open as a page inside Kiosk Pro (back = Kiosk Pro Home button). */
 const WEB={netflix:'https://www.netflix.com/browse'};
 function openApp(key){
+  sesNote('watched',key); sesEnd();
   if(WEB[key]){toast('Opening…');location.href=WEB[key];return;}
   const list=APPS[key].slice();
   (function next(){
@@ -721,7 +739,7 @@ function updBook(){const b=$('#bookBtn');if(pick.bday&&pick.btime){b.disabled=fa
 
 /* staff settings: hold the wordmark 2 s, or tap it 5 times quickly */
 let lp,taps=0,tapT;const wm=$('#wordmark');
-function openAdmin(){clearTimeout(lp);taps=0;veil.hidden=true;go('admin');}
+function openAdmin(){clearTimeout(lp);ses=null;taps=0;veil.hidden=true;go('admin');}
 function down(e){clearTimeout(lp);lp=setTimeout(openAdmin,2000);}
 function up(){clearTimeout(lp);taps++;clearTimeout(tapT);tapT=setTimeout(()=>taps=0,1500);if(taps>=5)openAdmin();}
 wm.addEventListener('touchstart',e=>{e.preventDefault();down();},{passive:false});
@@ -732,9 +750,10 @@ wm.addEventListener('contextmenu',e=>e.preventDefault());
 
 /* welcome + 15-minute idle reset */
 let idle;
-function resetIdle(){clearTimeout(idle);idle=setTimeout(()=>{moonSel=0;birthMoon=null;closeSheet();setSeat('');veil.hidden=false;pick=blank();go('home');},900000);}
+function resetIdle(){clearTimeout(idle);if(ses)ses.last=Date.now();else if(veil.hidden&&cur!=='admin'){sesStart();sesNote('screens',cur);}idle=setTimeout(()=>{sesEnd();moonSel=0;birthMoon=null;closeSheet();setSeat('');veil.hidden=false;pick=blank();go('home');},900000);}
 ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
-$('#start').onclick=()=>{veil.hidden=true;resetIdle();};
+$('#start').onclick=()=>{veil.hidden=true;sesEnd();sesStart();sesNote('screens',cur);resetIdle();};
+addEventListener('pagehide',sesEnd);
 $('#stationLabel').addEventListener('click',()=>{if(handheld())$('#seatSheet').hidden=false;});
 $('#seatDone').onclick=()=>{$('#seatSheet').hidden=true;};
 veil.addEventListener('click',e=>{if(e.target===veil){veil.hidden=true;resetIdle();}});
