@@ -603,14 +603,14 @@ S.moon=()=>`
 
 S.watch=()=>`
  <div class="wrap">
-   <div><div class="eyebrow">Relax</div><h2>Watch <em>&amp; listen.</em></h2><p class="lede">Headphones are at your station and fresh ear covers are on the tray. Swipe up from the bottom to come back to this menu.</p></div>
+   <div><div class="eyebrow">Relax</div><h2>Watch <em>&amp; listen.</em></h2><p class="lede">Headphones are at your station and fresh ear covers are on the tray. Tap the Home button at the top of the screen to come back to this menu.</p></div>
    <div class="apps">
      <button class="app-tile nf" data-app="netflix"><b>NETFLIX</b><span>Series & films</span></button>
      <button class="app-tile yt" data-app="youtube"><b>YouTube</b><span>Videos & music</span></button>
      <button class="app-tile hu" data-app="hulu"><b>hulu</b><span>Series & films</span></button>
      <button class="app-tile hb" data-app="hbomax"><b>HBO Max</b><span>Series & films</span></button>
    </div>
-   <p class="note">On the salon iPads these tiles open the installed apps, already signed in to the salon's profile.</p>
+   <p class="note">Already signed in to the salon's profile — just pick a show and enjoy.</p>
  </div>`;
 
 S.review=()=>`
@@ -685,7 +685,7 @@ $('#sheetClose').onclick=closeSheet;
 /* Open the installed streaming app by its app link; try the next one if the iPad is still showing us. */
 const APPS={netflix:['nflx://'],youtube:['youtube://'],hulu:['hulu://'],hbomax:['shortcuts://run-shortcut?name=Open%20HBO%20Max'] /* iPad Shortcut 'Open HBO Max' → Open App: HBO Max */};
 /* Services that play fine in the iPad browser open as a page inside Kiosk Pro (back = Kiosk Pro Home button). */
-const WEB={netflix:'https://www.netflix.com/browse',youtube:'https://m.youtube.com/',hbomax:'https://play.hbomax.com/'};
+const WEB={netflix:'https://www.netflix.com/browse',youtube:'https://m.youtube.com/',hbomax:'https://play.hbomax.com/',hulu:'https://www.hulu.com/hub/home'};
 function openApp(key){
   sesNote('watched',key); sesEnd();
   if(WEB[key]){toast('Opening…');const u=WEB[key];setTimeout(()=>location.replace(u),1200);return;}
