@@ -336,7 +336,9 @@ const QS=new URLSearchParams(location.search);
 const SEATS=Math.min(Math.max(parseInt(QS.get('seats')||'8',10)||8,1),20);
 let seat='';
 function handheld(){return station.loc==='Seattle';}
-function stationText(){return handheld()?('Seattle · '+(seat?('Seat '+seat):'choose seat')+' · iPad '+station.num):(station.loc+' · Station '+station.num);}
+/* Kirkland stations: 1–7 manicure, 8–9 pedicure, 10 VIP room. */
+function kName(n){n=+n;return n>=1&&n<=7?'Manicure '+n:n===8||n===9?'Pedicure '+n:n===10?'VIP room':'Station '+n;}
+function stationText(){return handheld()?('Seattle · '+(seat?('Seat '+seat):'choose seat')+' · iPad '+station.num):(station.loc==='Kirkland'?'Kirkland · '+kName(station.num):station.loc+' · Station '+station.num);}
 function saveStation(){try{localStorage.setItem('pixie-station',JSON.stringify(station))}catch(e){} const l=$('#stationLabel');l.textContent=stationText();l.classList.toggle('tappable',handheld());$('#seatPick').hidden=!handheld();}
 function seatOpts(){const o=[];for(let i=1;i<=SEATS;i++)o.push(String(i));o.push('VIP');return o;}
 function renderSeats(){['#seatChips','#seatChips2'].forEach(id=>{const el=$(id);if(!el)return;el.innerHTML=seatOpts().map(s=>'<button class="spchip" data-seat="'+s+'" aria-pressed="'+(s===seat)+'">'+s+'</button>').join('');});}
@@ -688,7 +690,7 @@ S.admin=()=>`
      <label for="sLoc">Location</label>
      <select id="sLoc">${['Kirkland','Seattle'].map(l=>`<option ${l===station.loc?'selected':''}>${l}</option>`).join('')}</select>
      <label for="sNum">Station / iPad #</label>
-     <select id="sNum">${Array.from({length:12},(_,i)=>i+1).map(n=>`<option ${n==station.num?'selected':''}>${n}</option>`).join('')}</select>
+     <select id="sNum">${Array.from({length:12},(_,i)=>i+1).map(n=>`<option value="${n}" ${n==station.num?'selected':''}>${station.loc==='Kirkland'?n+' · '+kName(n):n}</option>`).join('')}</select>
    </div>
  </div>`;
 
