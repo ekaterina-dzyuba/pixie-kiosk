@@ -372,7 +372,7 @@ tick();setInterval(tick,15000);
 let tt;
 function toast(msg){$('#toastText').textContent=msg;const t=$('#toast');t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),3800);}
 /* Requests go to n8n → Rosie → the admin phone of this tablet's location. */
-const HOOK='https://pixienaillab.app.n8n.cloud/webhook/pixie-kiosk';
+const HOOK='https://post.tail2a2415.ts.net/webhook/pixie-kiosk';
 let cur='home';
 function sent(what,kind){
   kind=kind||({desk:'desk',book:'book',shop:'shop',colors:'shade',drinks:'drink'})[cur]||'desk';
@@ -384,7 +384,7 @@ function sent(what,kind){
   sesNote('actions',kind==='drink'?'drink: '+String(what).slice(0,60):kind==='shade'?'shades: '+String(what).replace('Luxio shades: ','').slice(0,60):({desk:'call desk',book:'booking request',shop:'gift card'})[kind]||kind);
 }
 /* Anonymous usage stats: one row per client session → n8n → «Kiosk Sessions». No names, no notes. */
-const STATS='https://pixienaillab.app.n8n.cloud/webhook/pixie-kiosk-stats';
+const STATS='https://post.tail2a2415.ts.net/webhook/pixie-kiosk-stats';
 let ses=null;
 function sesStart(){ses={t0:Date.now(),last:Date.now(),screens:[],actions:[],watched:[]};}
 function sesNote(type,v){
